@@ -12,7 +12,6 @@ public class ReviewController {
 	@PostMapping
 	public ResponseEntity<String> WriteReview(){
 		return ResponseEntity.ok().body("리뷰 등록이 완료되었습니다.");
-	
 	}
 	
 }
