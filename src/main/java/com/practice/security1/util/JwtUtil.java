@@ -11,6 +11,20 @@ import io.jsonwebtoken.security.Keys;
 
 public class JwtUtil {
 	
+	// token 기간 만료 여부
+	public static boolean isExpired(String token, String secretKey) {
+		
+		Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+		
+		return Jwts.parserBuilder()
+						.setSigningKey(key)
+						.build()
+						.parseClaimsJws(token)
+						.getBody()
+						.getExpiration()
+						.before(new Date());
+	}
+	
 	public static String createJwt(String userName, String secretKey, Long expiredMs) {
 		Claims claims = Jwts.claims();
 		claims.put("userName", userName);
@@ -21,7 +35,7 @@ public class JwtUtil {
 					.setClaims(claims)
 					.setIssuedAt(new Date(System.currentTimeMillis()))
 					.setExpiration(new Date(System.currentTimeMillis() + expiredMs))
-					.signWith(SignatureAlgorithm.HS256, key)
+					.signWith(key, SignatureAlgorithm.HS256)
 					.compact();
 	}
 	
