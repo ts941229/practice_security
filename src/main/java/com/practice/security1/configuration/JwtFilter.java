@@ -1,6 +1,8 @@
 package com.practice.security1.configuration;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.FilterChain;
@@ -18,6 +20,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.practice.security1.service.MemberService;
 import com.practice.security1.util.JwtUtil;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +36,8 @@ public class JwtFilter extends OncePerRequestFilter{
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		
+		System.out.println("test1");
+		
 		final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 		log.info("authorization : {}", authorization);
 
@@ -42,8 +48,13 @@ public class JwtFilter extends OncePerRequestFilter{
 			return;
 		}
 		
+		System.out.println("test2");
+		
 		// Token 꺼내기
 		String token = authorization.split(" ")[1];
+		
+		System.out.println("test3");
+		
 		
 		// Token 만료 되었는지 여부
 		if(JwtUtil.isExpired(token, secretKey)) {
@@ -52,7 +63,9 @@ public class JwtFilter extends OncePerRequestFilter{
 			return;
 		}
 		
-		String memberName = "";
+		
+		String memberName = JwtUtil.getMemberName(token, secretKey);
+		log.info("memberName:{}", memberName);
 		
 		// 권한 부여
 		UsernamePasswordAuthenticationToken authenticationToken =
